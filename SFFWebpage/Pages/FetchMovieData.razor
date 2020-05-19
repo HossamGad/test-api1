@@ -1,0 +1,96 @@
+﻿@page "/fetchdata"
+@page "/fetchdata/{Id:int}"
+
+@using SFFWebpage.Data
+@using SFF.Datasource.Model
+@using System.Threading
+@inject MovieService movieService
+
+<h1>Movie info</h1>
+
+@if (movies == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="table">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Duration (min)</th>
+                    <th>Currently Rented</th>
+                    <th>Max Rented</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var movie in movies)
+                {
+                    Id = movie.Id;
+                    <tr>
+                        <td>@movie.Title</td>
+                        <td>@movie.Duration</td>
+                        <td>@movie.NumberOfCurrentlyRented</td>
+                        <td>@movie.NumberOfMaxSimultaneouslyRented</td>
+                        <td><a href="/fetchdata/@movie.Id" class="btn btn-success">Rent</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private Movie[] movies;
+    [Parameter]
+    public int Id { get; set; }
+
+    CancellationTokenSource pollingCancellationToken;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movies = await movieService.GetMoviesAsync();
+    }
+
+    private void RentMovie()
+    {
+        movieService.RentMovieAsync(Id);
+    }
+
+    protected override void OnParametersSet()
+    {
+        // If we were already polling for a different order, stop doing so
+        pollingCancellationToken?.Cancel();
+        if (Id != 0)
+        {
+
+            movieService.RentMovieAsync(Id);
+        }
+
+        // Start a new poll loop
+        PollForUpdates();
+    }
+
+    private async void PollForUpdates()
+    {
+        pollingCancellationToken = new CancellationTokenSource();
+        while (!pollingCancellationToken.IsCancellationRequested)
+        {
+            try
+            {
+                await movieService.GetMoviesAsync();
+            }
+            catch (Exception ex)
+            {
+                pollingCancellationToken.Cancel();
+                Console.Error.WriteLine(ex);
+            }
+
+            StateHasChanged();
+
+            await Task.Delay(200);
+        }
+    }
+}
