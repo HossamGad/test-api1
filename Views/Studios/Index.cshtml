@@ -1,0 +1,32 @@
+﻿@model IEnumerable<SFF_Api_App.Models.Studio>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<button class="button" id="studioButton">Studios</button>
+<button class="button" id="delstudioButton">delstudioButton</button>
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>StudioId</th>
+                <th>Name<br /></th>
+                <th>Ort	</th>
+            </tr>
+        </thead>
+        <tbody id="dataStudio">
+        </tbody>
+        </table>
+
+</div>
+
+<div>
+    <form id="deleteStudioForm">
+        <label>
+            <input id="DeleteStudio" type="text" />
+        </label>
+        <input type="submit" value="Delete" class="btn btn-danger" />
+    </form>
+
+</div>

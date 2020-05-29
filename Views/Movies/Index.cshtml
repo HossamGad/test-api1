@@ -1,0 +1,25 @@
+﻿@model IEnumerable<SFF_Api_App.Models.Movie>
+
+
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    <button class="button" id="movieButton">Movies</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID	</th>
+                <th>Name<br />	</th>
+                <th>genre	</th>
+                <th>studioName	</th>
+                <th>reviews	</th>
+                <th>stock	</th>
+                <th>trivias	</th>
+             </tr>
+        </thead>
+        <tbody id="data">
+        </tbody>
+        
+        </table>
+
